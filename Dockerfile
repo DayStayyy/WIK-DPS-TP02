@@ -1,8 +1,16 @@
-FROM rust:latest
+FROM rust:1.64.0 AS build
 
-WORKDIR /myapp
-COPY . .
+RUN cargo new --bin WIK-DPS-TP02
+WORKDIR /WIK-DPS-TP02
 
-RUN cargo install --path .
+COPY ./Cargo.lock ./Cargo.lock
+COPY ./Cargo.toml ./Cargo.toml
+COPY ./src ./src
 
-CMD ["myapp"]
+RUN cargo build --release
+
+FROM rust:1.64.0
+
+COPY --from=build /WIK-DPS-TP02/target/release/WIK-DPS-TP02 .
+
+CMD ["./WIK-DPS-TP02"]
